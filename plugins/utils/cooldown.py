@@ -15,14 +15,10 @@ async def send_cooldown(msg):
     if data[str(user.id)]['proceed'] is True: #if true
         data[str(user.id)]['proceed'] = False #then enter this code and save it as False, save it as False will prevent entering this code if send a command again
         ids = await msg.reply(f"Sorry {user.mention}, this command is in cooldown, wait for {int(data[str(user.id)]['timestamp'] - time.time())} seconds to use this command again..")
-        cond = True #condition
-        while cond: #enter loop if cond var is True
-            if int(data[str(user.id)]['timestamp'] - time.time()) == 0:
-                await ids.edit_text(f"Alright {user.mention}, cooldown for this command is over.")
-                await asyncio.sleep(1)
-                await ids.delete() #after that delete the bot, message on the var ids
-                cond = False       #if cooldown time is 0 then save cond var as False
-                break              #then break the loop
+        if int(data[str(user.id)]['timestamp'] - time.time()) == 0:
+            await ids.edit_text(f"Alright {user.mention}, cooldown for this command is over.")
+            await asyncio.sleep(1)
+            await ids.delete() #after that delete the bot, message on the var ids
 
 def wait(seconds):
     def decorator(func):
