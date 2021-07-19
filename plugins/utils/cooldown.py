@@ -10,7 +10,7 @@ def create(msg):
 
 async def send_cooldown(msg):
     user = msg.from_user
-    try:await msg.delete()                  #delete the command when in a cooldown
+    try:await msg.delete()                    #delete the command when in a cooldown
     except:pass
     if data[str(user.id)]['proceed'] is True: #if true
         data[str(user.id)]['proceed'] = False #then enter this code and save it as False, save it as False will prevent entering this code if send a command again
