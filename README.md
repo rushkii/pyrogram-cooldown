@@ -1,2 +1,1 @@
-# pyrogram-cooldown
-A useful decorator that can set your specific command into cooldown.
+Pool request are open for make this code perfectful :)
