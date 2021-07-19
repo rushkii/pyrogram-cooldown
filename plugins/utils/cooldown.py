@@ -2,35 +2,35 @@ from datetime import datetime
 import datetime as dtime
 import asyncio, time
 
-data = {} 
+data = {}
 
-def create(msg):
-    if str(msg.from_user.id) not in list(data.keys()):
-        data.update({str(msg.from_user.id): {'timestamp': 0, 'proceed': False}})
-
-async def send_cooldown(msg):
-    user = msg.from_user
-    try:await msg.delete()                    #delete the command when in a cooldown
+async def task(msg, warn = False, sec = None):
+    try:await msg.delete()
     except:pass
-    if data[str(user.id)]['proceed'] is True: #if true
-        data[str(user.id)]['proceed'] = False #then enter this code and save it as False, save it as False will prevent entering this code if send a command again
-        ids = await msg.reply(f"Sorry {user.mention}, this command is in cooldown, wait for {int(data[str(user.id)]['timestamp'] - time.time())} seconds to use this command again..")
-        if int(data[str(user.id)]['timestamp'] - time.time()) == 0:
-            await ids.edit_text(f"Alright {user.mention}, cooldown for this command is over.")
-            await asyncio.sleep(1)
-            await ids.delete() #after that delete the bot, message on the var ids
+    if warn:
+        user = msg.from_user
+        ids = await msg.reply(f"Sorry {user.mention}, this command is in cooldown, wait for {sec}s to use this command again..")
+        await asyncio.sleep(sec)
+        await ids.edit(f"Alright {user.mention}, cooldown for this command is over.")
+        await asyncio.sleep(1)
+        await ids.delete()
 
-def wait(seconds):
-    def decorator(func):
-        async def wrapper(_, msg):
-            user = msg.from_user
-            create(msg)
-            if int(data[str(user.id)]['timestamp'] - time.time()) < 1:
-                est = datetime.now() + dtime.timedelta(seconds=seconds)
-                data[str(user.id)]['timestamp'] = est.timestamp()
-                data[str(user.id)]['proceed'] = True #save cooldown status as True
-                return await func(_, msg)
-            else:
-                await send_cooldown(msg)
-        return wrapper
-    return decorator
+def wait(sec):
+	async def ___(flt, cli, msg):
+		user_id = msg.from_user.id
+		if user_id in data:
+			if msg.date >= data[user_id]['timestamp'] + flt.data:
+				data[user_id] = {'timestamp' : msg.date, 'warned' : False}
+				return True
+			else:
+				if not data[user_id]['warned']:
+					data[user_id]['warned'] = True
+					asyncio.ensure_future(task(msg, True, flt.data)) # for super accuracy use (future - time.time())
+					return False # cause we dont need delete again
+
+				asyncio.ensure_future(task(msg))
+				return False
+		else:
+			data.update({user_id : {'timestamp' : msg.date, 'warned' : False}})
+			return True
+	return filters.create(___, data=sec)
