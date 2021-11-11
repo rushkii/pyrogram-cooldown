@@ -11,9 +11,9 @@ async def task(msg, warn = False, sec = None):
     except:pass
     if warn:
         user = msg.from_user
-        ids = await msg.reply(f"Sorry {user.mention}, this command is in cooldown, wait for {sec}s to use this command again..")
+        ids = await msg.reply(f"Sorry {user.mention}, you're in cooldown now, wait for {sec}s to use command again..")
         await asyncio.sleep(sec)
-        await ids.edit(f"Alright {user.mention}, cooldown for this command is over.")
+        await ids.edit(f"Alright {user.mention}, your cooldown is over you can command again.")
         await asyncio.sleep(1)
         await ids.delete()
 
